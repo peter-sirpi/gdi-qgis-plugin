@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/Ugix_resources" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>

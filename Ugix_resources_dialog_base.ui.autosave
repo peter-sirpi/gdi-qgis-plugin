@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Ugix_resourcesDialogBase</class>
+ <widget class="QDialog" name="Ugix_resourcesDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>408</width>
+    <height>349</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Ugix_resources</string>
+  </property>
+  <widget class="QListWidget" name="listWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>110</y>
+     <width>391</width>
+     <height>201</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="okButton">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>320</y>
+     <width>80</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fetch Data</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>391</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>List of data resources</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>50</y>
+     <width>221</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Functional Areas (Administrative Boundaries)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Geographical Names (Toponymy)</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Transport Networks</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Water</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Physical Infrastructure</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Environment</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Buildings and Settlements</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Land Cover and Land Use</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Elevation and Depth</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Geodetic Reference Frame</string>
+    </property>
+   </item>
+  </widget>
+  <widget class="QRadioButton" name="radioButtonAll">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>50</y>
+     <width>69</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>All</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="radioButtonPrivate">
+   <property name="geometry">
+    <rect>
+     <x>300</x>
+     <y>50</y>
+     <width>69</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Private</string>
+   </property>
+  </widget>
+  <widget class="QRadioButton" name="radioButtonPublic">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>50</y>
+     <width>69</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Public</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="comboBox2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>80</y>
+     <width>221</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
