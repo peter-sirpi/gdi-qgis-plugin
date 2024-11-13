@@ -16,7 +16,7 @@ class Ui_LoginDialog(object):
         self.logoLabel = QtWidgets.QLabel(LoginDialog)
         self.logoLabel.setObjectName("logoLabel")
         self.logoLabel.setAlignment(QtCore.Qt.AlignCenter)
-        pixmap = QtGui.QPixmap("C:/Users/Admin/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/ugix_resources/ugix-m-logo-1024x805.png")  # Replace with your logo path
+        pixmap = QtGui.QPixmap("C:/Users/Admin/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/ugix_resources/gdi_plugin_icon.png")  # Replace with your logo path
         self.logoLabel.setPixmap(pixmap.scaled(100, 100, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation))
         self.mainLayout.addWidget(self.logoLabel)
         

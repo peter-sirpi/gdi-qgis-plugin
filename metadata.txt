@@ -7,17 +7,15 @@ name=Ugix_resources
 qgisMinimumVersion=3.0
 description=This plugin is used to get the data from ugix server
 version=0.1
-author=Sirpi
+author=Sirup
 email=shine@sirpi.io
 
 
 about=This plugin is used to get the data from ugix server
 
-tracker=https://github.com/sirpi-in/qgis-plugin-ugix/issues
+tracker=https://github.com/qgis/qgis/issues
 repository=https://github.com/sirpi-in/qgis-plugin-ugix.git
 # End of mandatory metadata
-
-
 
 # Recommended items:
 
@@ -30,7 +28,7 @@ tags=python
 
 homepage=https://catalogue.cos.iudx.org.in/
 category=Plugins
-icon=ugix_icon.png
+icon=gdi_plugin_logo.png
 # experimental flag
 experimental=True
 

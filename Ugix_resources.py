@@ -62,7 +62,6 @@ class MapToolIdentifyFeature(QgsMapToolIdentifyFeature):
             # Extract feature from results
             feature = results[0].mFeature
             
-
             # Get attribute names and values
             field_names = [field.name() for field in feature.fields()]
             attrs = feature.attributes()
@@ -86,8 +85,8 @@ class Ugix_resources:
 
 
         self.plugin_dir = os.path.dirname(__file__)
-        self.icon_path = os.path.join(self.plugin_dir, 'ugix_icon.png')
-        self.access_token = None 
+        self.icon_path = os.path.join(self.plugin_dir, 'gdi_plugin_icon.png')
+        self.access_token = None  # Initialize access token
 
         # Initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
