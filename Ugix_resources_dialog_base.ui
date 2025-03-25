@@ -49,16 +49,16 @@
     <string>List of data resources</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox">
+  <!-- <widget class="QComboBox" name="comboBox">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>50</y>
-     <width>121</width>
+     <width>90</width>
      <height>22</height>
     </rect>
    </property>
-  </widget>
+  </widget> -->
   <widget class="QRadioButton" name="radioButtonAll">
    <property name="geometry">
     <rect>

@@ -21,6 +21,8 @@
  *                                                                         *
  ***************************************************************************/
 """
+import pandas as pd
+import requests
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication, Qt, QVariant
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox, QDialog, QListWidgetItem
@@ -86,8 +88,14 @@ class Ugix_resources:
 
         self.plugin_dir = os.path.dirname(__file__)
         self.icon_path = os.path.join(self.plugin_dir, 'gdi_plugin_icon.png')
+        # self.marker_path = os.path.join(self.plugin_dir, 'generic_marker.png')
+
         self.access_token = None  # Initialize access token
 
+        # Initialize client_id and client_secret
+        self.client_id = None
+        self.client_secret = None
+        
         # Initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(self.plugin_dir, 'i18n', f'Ugix_resources_{locale}.qm')
@@ -122,8 +130,10 @@ class Ugix_resources:
         self.activate_map_tool()
 
 
-    def on_login_successful(self, access_token):
+    def on_login_successful(self, access_token,client_id,client_secret):
         self.access_token = access_token
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.show_dialog()
         
     def tr(self, message):
@@ -187,12 +197,13 @@ class Ugix_resources:
             # Create a QWidget to hold the label and the colored box
             item_widget = QWidget()
             layout = QHBoxLayout(item_widget)
-            layout.setContentsMargins(5, 5, 5, 5)
-            layout.setSpacing(10)
+            layout.setContentsMargins(10, 20, 10, 20)
+            layout.setSpacing(20)
 
             # Create the label
             label = QLabel(label_text)
             label.setFixedWidth(200)  # Set a fixed width for the label
+            label.setWordWrap(True)
 
             # Create the colored box
             color_box = QWidget()
@@ -313,26 +324,70 @@ class Ugix_resources:
                 else:
                     QMessageBox.warning(None, 'Warning', f"Invalid coordinate list format: {line_coords}")
 
+        # elif geometry_type == "MultiPoint" or geometry_type == "Point":
+        #     if geometry_type == "Point":
+        #         for point_coords in coordinates:
+        #             if isinstance(point_coords, list) and len(point_coords) >= 2:
+        #                 point = QgsPointXY(point_coords[0], point_coords[1])
+        #                 geom = QgsGeometry.fromPointXY(point)
+        #                 feature = QgsFeature()
+        #                 feature.setGeometry(geom)
+        #                 feature.setAttributes([label, name, description])  # Set attributes
+        #                 features.append(feature)
+        #             else:
+        #                 QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {point_coords}")
+        #     elif geometry_type == "MultiPoint":
+        #         points = []
+        #         for point_coords in coordinates:
+        #             if isinstance(point_coords, list) and len(point_coords) >= 2:
+        #                 point = QgsPointXY(point_coords[0], point_coords[1])
+        #                 points.append(point)
+        #             else:
+        #                 QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {point_coords}")
+        #         if points:
+        #             geom = QgsGeometry.fromMultiPointXY(points)
+        #             feature = QgsFeature()
+        #             feature.setGeometry(geom)
+        #             feature.setAttributes([label, name, description])  # Set attributes
+        #             features.append(feature)
+            
+            
         elif geometry_type == "MultiPoint" or geometry_type == "Point":
             if geometry_type == "Point":
                 for point_coords in coordinates:
-                    if isinstance(point_coords, list) and len(point_coords) >= 2:
-                        point = QgsPointXY(point_coords[0], point_coords[1])
-                        geom = QgsGeometry.fromPointXY(point)
-                        feature = QgsFeature()
-                        feature.setGeometry(geom)
-                        feature.setAttributes([label, name, description])  # Set attributes
-                        features.append(feature)
+                    # Debug print to check the coordinates being processed
+                    print(f"Processing point_coords: {point_coords}")
+                    if isinstance(point_coords, list):
+                        if len(point_coords) >= 2:
+                            try:
+                                point = QgsPointXY(float(point_coords[0]), float(point_coords[1]))
+                                geom = QgsGeometry.fromPointXY(point)
+                                feature = QgsFeature()
+                                feature.setGeometry(geom)
+                                feature.setAttributes([label, name, description])  # Set attributes
+                                features.append(feature)
+                            except (ValueError, IndexError) as e:
+                                QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {point_coords}. Error: {str(e)}")
+                        else:
+                            QMessageBox.warning(None, 'Warning', f"Coordinate should have at least two elements: {point_coords}")
                     else:
-                        QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {point_coords}")
+                        QMessageBox.warning(None, 'Warning', f"Coordinate is not a list: {point_coords}")
             elif geometry_type == "MultiPoint":
                 points = []
                 for point_coords in coordinates:
-                    if isinstance(point_coords, list) and len(point_coords) >= 2:
-                        point = QgsPointXY(point_coords[0], point_coords[1])
-                        points.append(point)
+                    # Debug print to check the coordinates being processed
+                    print(f"Processing point_coords: {point_coords}")
+                    if isinstance(point_coords, list):
+                        if len(point_coords) >= 2:
+                            try:
+                                point = QgsPointXY(float(point_coords[0]), float(point_coords[1]))
+                                points.append(point)
+                            except (ValueError, IndexError) as e:
+                                QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {point_coords}. Error: {str(e)}")
+                        else:
+                            QMessageBox.warning(None, 'Warning', f"Coordinate should have at least two elements: {point_coords}")
                     else:
-                        QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {point_coords}")
+                        QMessageBox.warning(None, 'Warning', f"Coordinate is not a list: {point_coords}")
                 if points:
                     geom = QgsGeometry.fromMultiPointXY(points)
                     feature = QgsFeature()
@@ -357,6 +412,12 @@ class Ugix_resources:
             QMessageBox.warning(None, 'Warning', 'Access token not available. Please log in first.')
             return
 
+        # # Display the access token in a popup
+        # QMessageBox.information(None, 'Access Token', f"Access Token: {self.access_token}")
+
+        # QMessageBox.information(None, 'Access Token', f"client_id: {self.client_id}")
+        Public_data_access_token = self.access_token
+        
         list_widget = self.dlg.listWidget
         selected_item = list_widget.currentItem()
 
@@ -370,23 +431,138 @@ class Ugix_resources:
             return
 
         access_policy = item_data.get('accessPolicy', 'Unknown')
+        # if access_policy == 'SECURE':
+        #     resource_group = item_data.get('resourceGroup', 'Unknown')
+        #     url = f'https://catalogue.geospatial.org.in/dataset/{resource_group}'
+            
+        #     message_box = QMessageBox()
+        #     message_box.setIcon(QMessageBox.Information)
+        #     message_box.setWindowTitle('Private Data')
+        #     message_box.setText('You do not have access to view this data.')
+        #     message_box.setInformativeText('Please visit the UGIX page to request access.')
+        #     visit_page_button = message_box.addButton('Visit Page', QMessageBox.ActionRole)
+        #     message_box.addButton(QMessageBox.Ok)
+        #     message_box.exec_()
+
+        #     if message_box.clickedButton() == visit_page_button:
+        #         webbrowser.open(url)
+
+        #     return
+
+        # item_id = item_data.get('id')
+        # if not item_id:
+        #     QMessageBox.warning(None, 'Warning', 'No ID available for the selected item.')
+        #     return
+
+        # progress_dialog = QProgressDialog("Fetching and processing data, please wait...", "Cancel", 0, 100)
+        # progress_dialog.setWindowTitle("Loading")
+        # progress_dialog.setWindowModality(Qt.ApplicationModal)
+        # progress_dialog.setMinimumDuration(0)
+        # progress_dialog.setValue(0)
+        # progress_dialog.setStyleSheet("QLabel { color : black; }")
+        # progress_dialog.show()
+
+        # QApplication.processEvents()
+
+        # offset = 1
+        # all_features = []
+
+        # try:
+        #     while True:
+        #         url = f'https://geoserver.dx.gsx.org.in/collections/{item_id}/items'
+        #         params = {'offset': offset}
+        #         headers = {
+        #             'Content-Type': 'application/json',
+        #             'Authorization': f'Bearer {self.access_token}'
+        #         }
+
+        #         response = requests.get(url, params=params, headers=headers)
+        #         response.raise_for_status()
+
+
+        #         # # Display headers in a popup
+        #         # response_headers = response.headers
+        #         # headers_str = "\n".join(f"{key}: {value}" for key, value in response_headers.items())
+        #         # QMessageBox.information(None, 'Response Headers', headers_str)
+
+
+
+        #         response_data = response.json()
+
+        #         features = response_data.get('features', [])
+        #         all_features.extend(features)
+
+        #         number_matched = response_data.get('numberMatched', 0)
+        #         number_returned = response_data.get('numberReturned', 0)
+
+        #         offset += number_returned
+
+        #         if number_matched > 0:
+        #             progress_value = int((offset / number_matched) * 100)
+        #             progress_dialog.setValue(progress_value)
+        #             QApplication.processEvents()
+
+        #         if offset >= number_matched:
+        #             break
+
+
+
         if access_policy == 'SECURE':
             resource_group = item_data.get('resourceGroup', 'Unknown')
-            url = f'https://catalogue.ugix.org.in/dataset/{resource_group}'
+            url = f'https://catalogue.geospatial.org.in/dataset/{resource_group}'
             
-            message_box = QMessageBox()
-            message_box.setIcon(QMessageBox.Information)
-            message_box.setWindowTitle('Private Data')
-            message_box.setText('You do not have access to view this data.')
-            message_box.setInformativeText('Please visit the UGIX page to request access.')
-            visit_page_button = message_box.addButton('Visit Page', QMessageBox.ActionRole)
-            message_box.addButton(QMessageBox.Ok)
-            message_box.exec_()
+            # client_id = "f1309bc3-5f84-4840-b489-185f62521238"
+            # client_secret = "20efea7113f58dd7a7b56f2dca4a3a14e4192859"
+            
+            # client_id =self.client_id
+            # client_secret =self.client_secret
 
-            if message_box.clickedButton() == visit_page_button:
-                webbrowser.open(url)
+        
 
-            return
+
+
+            # Fetch token for secure access
+            token_url = 'https://dx.gsx.org.in/auth/v1/token'
+            token_headers = {
+                'clientId': self.client_id,
+                'clientSecret': self.client_secret,
+                'Content-Type': 'application/json',
+                # 'Authorization': f'Bearer {self.access_token}'
+                }
+            token_body = {
+                "itemId": item_data.get('id'),
+                "itemType": "resource",
+                "role": "consumer"
+            }
+
+            try:
+                token_response = requests.post(token_url, json=token_body, headers=token_headers)
+                token_response.raise_for_status()
+
+                token_data = token_response.json()
+                self.access_token = token_data['results']['accessToken']
+                # response_json = json.loads(token_response.replace("'", '"'))
+                # self.access_token = response_json.get('results', {}).get('accessToken', None)
+
+                if not self.access_token:
+                    raise ValueError("Access token not received.")
+            except Exception as e:
+                ###############
+                # QMessageBox.information(None, 'Access Token', f"client_id: {self.client_id}")
+
+                message_box = QMessageBox()
+                message_box.setIcon(QMessageBox.Information)
+                message_box.setWindowTitle('Private Data')
+                message_box.setText('You do not have access to view this data.')
+                message_box.setInformativeText('Please visit the UGIX page to request access.')
+                visit_page_button = message_box.addButton('Visit Page', QMessageBox.ActionRole)
+                message_box.addButton(QMessageBox.Ok)
+                message_box.exec_()
+
+                if message_box.clickedButton() == visit_page_button:
+                    webbrowser.open(url)
+
+                return
 
         item_id = item_data.get('id')
         if not item_id:
@@ -408,12 +584,17 @@ class Ugix_resources:
 
         try:
             while True:
-                url = f'https://geoserver.dx.ugix.org.in/collections/{item_id}/items'
+                url = f'https://geoserver.dx.gsx.org.in/collections/{item_id}/items'
                 params = {'offset': offset}
                 headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': f'Bearer {self.access_token}'
+                    'Content-Type': 'application/json'
                 }
+
+                # Add Authorization header if access_token is available
+                if self.access_token:
+                    headers['Authorization'] = f'Bearer {self.access_token}'
+                ####################
+                # QMessageBox.information(None, 'Access Token', f"Access Token: {self.access_token}")
 
                 response = requests.get(url, params=params, headers=headers)
                 response.raise_for_status()
@@ -425,6 +606,8 @@ class Ugix_resources:
 
                 number_matched = response_data.get('numberMatched', 0)
                 number_returned = response_data.get('numberReturned', 0)
+                # QMessageBox.information(None, 'number_matched', f"number_matched: {number_matched}")
+                # QMessageBox.information(None, 'number_returned', f"number_returned: {number_returned}")
 
                 offset += number_returned
 
@@ -436,13 +619,18 @@ class Ugix_resources:
                 if offset >= number_matched:
                     break
 
+                
+
+
+
         except requests.RequestException as e:
             progress_dialog.close()
             QMessageBox.critical(None, 'Error', f'Failed to fetch data from API: {e}')
             if e.response is not None:
                 QMessageBox.critical(None, 'Error Response', f'Error Response:\n{e.response.text}')
             return
-
+        
+        self.access_token = Public_data_access_token    
         if not all_features:
             progress_dialog.close()
             QMessageBox.information(None, 'Info', 'No features found for the selected item.')
@@ -477,39 +665,50 @@ class Ugix_resources:
         coord_transform = QgsCoordinateTransform(source_crs, target_crs, transform_context)
 
         for feature_data in all_features:
-            geometry = feature_data['geometry']
-            geom_type = geometry['type']
-            coords = geometry['coordinates']
+            geometry = feature_data.get('geometry')  # Use `.get()` to avoid KeyError
 
-            properties = feature_data.get('properties', {})
+            if geometry:  # Check if geometry is not None
+                coords = geometry.get('coordinates')  # Safely get coordinates
+                geom_type = geometry.get('type')  # Safely get type
 
-            if geom_type == 'Point':
-                point = QgsPointXY(coords[0], coords[1])
-                transformed_point = coord_transform.transform(point)
-                geom = QgsGeometry.fromPointXY(transformed_point)
-            elif geom_type == 'LineString':
-                polyline = [QgsPointXY(coord[0], coord[1]) for coord in coords]
-                transformed_polyline = [coord_transform.transform(point) for point in polyline]
-                geom = QgsGeometry.fromPolylineXY(transformed_polyline)
-            elif geom_type == 'Polygon':
-                polygon = [QgsPointXY(coord[0], coord[1]) for coord in coords[0]]
-                transformed_polygon = [coord_transform.transform(point) for point in polygon]
-                geom = QgsGeometry.fromPolygonXY([transformed_polygon])
-            elif geom_type == 'MultiPoint':
-                multipoint = [QgsPointXY(coord[0], coord[1]) for coord in coords]
-                transformed_multipoint = [coord_transform.transform(point) for point in multipoint]
-                geom = QgsGeometry.fromMultiPointXY(transformed_multipoint)
-            elif geom_type == 'MultiLineString':
-                multilinestring = [[QgsPointXY(coord[0], coord[1]) for coord in line] for line in coords]
-                transformed_multilinestring = [[coord_transform.transform(point) for point in line] for line in multilinestring]
-                geom = QgsGeometry.fromMultiPolylineXY(transformed_multilinestring)
-            elif geom_type == 'MultiPolygon':
-                multipolygon = [[QgsPointXY(coord[0], coord[1]) for coord in ring] for ring in coords[0]]
-                transformed_multipolygon = [[coord_transform.transform(point) for point in ring] for ring in multipolygon]
-                geom = QgsGeometry.fromMultiPolygonXY([transformed_multipolygon])
+                if geom_type == 'Point':
+                    if isinstance(coords, list) and len(coords) >= 2:
+                        try:
+                            point = QgsPointXY(coords[0], coords[1])
+                            transformed_point = coord_transform.transform(point)
+                            geom = QgsGeometry.fromPointXY(transformed_point)
+                        except Exception as e:
+                            QMessageBox.warning(None, 'Warning', f"Error processing coordinates: {coords}. Exception: {str(e)}")
+                    else:
+                        # QMessageBox.warning(None, 'Warning', f"Invalid coordinate format: {coords}. Coordinates must contain at least two elements.")
+                        continue
+                elif geom_type == 'LineString':
+                    polyline = [QgsPointXY(coord[0], coord[1]) for coord in coords]
+                    transformed_polyline = [coord_transform.transform(point) for point in polyline]
+                    geom = QgsGeometry.fromPolylineXY(transformed_polyline)
+                elif geom_type == 'Polygon':
+                    polygon = [QgsPointXY(coord[0], coord[1]) for coord in coords[0]]
+                    transformed_polygon = [coord_transform.transform(point) for point in polygon]
+                    geom = QgsGeometry.fromPolygonXY([transformed_polygon])
+                elif geom_type == 'MultiPoint':
+                    multipoint = [QgsPointXY(coord[0], coord[1]) for coord in coords]
+                    transformed_multipoint = [coord_transform.transform(point) for point in multipoint]
+                    geom = QgsGeometry.fromMultiPointXY(transformed_multipoint)
+                elif geom_type == 'MultiLineString':
+                    multilinestring = [[QgsPointXY(coord[0], coord[1]) for coord in line] for line in coords]
+                    transformed_multilinestring = [[coord_transform.transform(point) for point in line] for line in multilinestring]
+                    geom = QgsGeometry.fromMultiPolylineXY(transformed_multilinestring)
+                elif geom_type == 'MultiPolygon':
+                    multipolygon = [[QgsPointXY(coord[0], coord[1]) for coord in ring] for ring in coords[0]]
+                    transformed_multipolygon = [[coord_transform.transform(point) for point in ring] for ring in multipolygon]
+                    geom = QgsGeometry.fromMultiPolygonXY([transformed_multipolygon])
+                else:
+                    # QMessageBox.warning(None, 'Warning', f"Unsupported geometry type: {geom_type}. Skipping feature.")
+                    continue
             else:
+                # QMessageBox.warning(None, 'Warning', "Feature geometry is missing or invalid.")
                 continue
-
+    
             feature = QgsFeature()
             feature.setGeometry(geom)
             
@@ -530,6 +729,8 @@ class Ugix_resources:
         progress_dialog.setValue(100)
         progress_dialog.close()
         QMessageBox.information(None, 'Info', 'Data successfully loaded and displayed.')
+
+
 
 
     def add_action(
@@ -647,6 +848,9 @@ class Ugix_resources:
             # Assume LoginDialog returns access_token after successful login
             self.access_token = self.login_dialog.access_token
 
+            self.client_id = self.login_dialog.client_id
+            self.client_secret = self.login_dialog.client_secret
+            
             # Create and show a QProgressDialog
             progress_dialog = QProgressDialog("Logging into your Ugix account, please wait...", None, 0, 0)
             progress_dialog.setWindowTitle("Loading")
@@ -664,8 +868,10 @@ class Ugix_resources:
                 QApplication.processEvents()
 
             # Fetch data from the API immediately after successful login
-            url = 'https://dx.ugix.org.in/ugix/cat/v1/search?property=[type]&value=[[iudx:Resource]]'
+            url = 'https://dx.gsx.org.in/ugix/cat/v1/search?property=[type]&value=[[iudx:Resource]]'
             data = self.fetch_api_data(url)
+
+
 
             # Hide the progress dialog once data is fetched
             progress_dialog.close()

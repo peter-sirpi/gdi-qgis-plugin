@@ -88,13 +88,16 @@ class LoginDialog(QtWidgets.QDialog, Ui_LoginDialog):
         self.check_credentials()
 
     def check_credentials(self):
-        auth_server_url = 'https://dx.ugix.org.in/auth/v1/token'
-        client_id = self.lineEdit_client_id.text()
-        client_secret = self.lineEdit_client_secret.text()
+        auth_server_url = 'https://dx.gsx.org.in/auth/v1/token'
+        self.client_id = self.lineEdit_client_id.text()
+        self.client_secret = self.lineEdit_client_secret.text()
 
+        # self.client_id = "f1309bc3-5f84-4840-b489-185f62521238"
+        # self.client_secret = "20efea7113f58dd7a7b56f2dca4a3a14e4192859"
+        
         headers = {
-            'clientId': client_id,
-            'clientSecret': client_secret,
+            'clientId': self.client_id,
+            'clientSecret': self.client_secret,
             'Content-Type': 'application/json'
         }
 

@@ -1,8 +1,6 @@
-﻿# This file contains metadata for your plugin.
-
+# This file contains metadata for your plugin.
 
 # This file should be included when you package your plugin.# Mandatory items:
-
 
 [general]
 name=GDI
@@ -12,47 +10,38 @@ version=0.1
 author=CDPG
 email=support@cdpg.org.in
 
-
 about=This plugin is designed to facilitate seamless discovery and access to data available on the GDI platform by leveraging its integrated APIs: the Data Explorer, Authorization Server, and OGC Resource Server.
-
 
 tracker=https://github.com/datakaveri/gdi-qgis-plugin/issues
 repository=https://github.com/datakaveri/gdi-qgis-plugin
 # End of mandatory metadata
 
-
 # Recommended items:
 
-
-hasProcessingProvider=no
+hasProcessingProvider=yes
 # Uncomment the following line and add your changelog:
 # changelog=
-
 
 # Tags are comma separated with spaces allowed
 tags=python,gdi,geospatial,data,exchange
 
-
-homepage=https://catalogue.gsx.org.in/
+homepage=https://docs.gsx.org.in/docs/Consumer/GDI_plugin
 category=Plugins
-icon=gdi_icon.png
+icon=gdi_plugin_logo.png
 # experimental flag
-experimental=True
-
+experimental=False
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False
-
 
 # Since QGIS 3.8, a comma separated list of plugins to be installed
 # (or upgraded) can be specified.
 # Check the documentation for more information.
 # plugin_dependencies=
 
-
 Category of the plugin: Raster, Vector, Database or Web
 # category=
 
-
 # If the plugin can run on QGIS Server.
 server=False
+
