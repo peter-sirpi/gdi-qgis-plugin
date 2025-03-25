@@ -554,7 +554,7 @@ class Ugix_resources:
                 message_box.setIcon(QMessageBox.Information)
                 message_box.setWindowTitle('Private Data')
                 message_box.setText('You do not have access to view this data.')
-                message_box.setInformativeText('Please visit the UGIX page to request access.')
+                message_box.setInformativeText('Please visit the GDI page to request access.')
                 visit_page_button = message_box.addButton('Visit Page', QMessageBox.ActionRole)
                 message_box.addButton(QMessageBox.Ok)
                 message_box.exec_()
@@ -584,7 +584,7 @@ class Ugix_resources:
 
         try:
             while True:
-                url = f'https://geoserver.dx.gsx.org.in/collections/{item_id}/items'
+                url = f'https://geoserver.dx.geospatial.org.in/collections/{item_id}/items'
                 params = {'offset': offset}
                 headers = {
                     'Content-Type': 'application/json'
@@ -868,7 +868,7 @@ class Ugix_resources:
                 QApplication.processEvents()
 
             # Fetch data from the API immediately after successful login
-            url = 'https://dx.gsx.org.in/ugix/cat/v1/search?property=[type]&value=[[iudx:Resource]]'
+            url = 'https://dx.geospatial.org.in/dx/cat/v1/search?property=[type]&value=[[iudx:Resource]]'
             data = self.fetch_api_data(url)
 
 

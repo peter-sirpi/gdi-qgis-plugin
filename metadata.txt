@@ -25,7 +25,7 @@ hasProcessingProvider=yes
 # Tags are comma separated with spaces allowed
 tags=python,gdi,geospatial,data,exchange
 
-homepage=https://docs.gsx.org.in/docs/Consumer/GDI_plugin
+homepage=https://docs.geospatial.org.in/docs/Consumer/GDI_plugin
 category=Plugins
 icon=gdi_plugin_logo.png
 # experimental flag
